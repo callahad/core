@@ -11,6 +11,18 @@ function updateStatus(statusEl, result){
 	}
 }
 
+function highlightInput(input) {
+	if ($(input).attr('type') == 'text' || $(input).attr('type') == 'password') {
+		if ($(input).val() == '' && !$(input).hasClass('optional')) {
+			$(input).addClass('warning-input');
+			return true;
+		} else {
+			$(input).removeClass('warning-input');
+			return false;
+		}
+	}
+}
+
 OC.MountConfig={
 	saveStorage:function(tr, callback) {
 		var mountPoint = $(tr).find('.mountPoint input').val();
@@ -191,17 +203,20 @@ $(document).ready(function() {
 						is_optional = true;
 						placeholder = placeholder.substring(1);
 					}
+					var newElement;
 					if (placeholder.indexOf('*') === 0) {
 						var class_string = is_optional ? ' optional' : '';
-						td.append('<input type="password" class="added' + class_string + '" data-parameter="'+parameter+'" placeholder="'+placeholder.substring(1)+'" />');
+						newElement = $('<input type="password" class="added' + class_string + '" data-parameter="'+parameter+'" placeholder="'+placeholder.substring(1)+'" />');
 					} else if (placeholder.indexOf('!') === 0) {
-						td.append('<label><input type="checkbox" class="added" data-parameter="'+parameter+'" />'+placeholder.substring(1)+'</label>');
+						newElement = $('<label><input type="checkbox" class="added" data-parameter="'+parameter+'" />'+placeholder.substring(1)+'</label>');
 					} else if (placeholder.indexOf('#') === 0) {
-						td.append('<input type="hidden" class="added" data-parameter="'+parameter+'" />');
+						newElement = $('<input type="hidden" class="added" data-parameter="'+parameter+'" />');
 					} else {
 						var class_string = is_optional ? ' optional' : '';
-						td.append('<input type="text" class="added' + class_string + '" data-parameter="'+parameter+'" placeholder="'+placeholder+'" />');
+						newElement = $('<input type="text" class="added' + class_string + '" data-parameter="'+parameter+'" placeholder="'+placeholder+'" />');
 					}
+					highlightInput(newElement);
+					td.append(newElement);
 				});
 				if (parameters['custom'] && $('#externalStorage tbody tr.'+backendClass.replace(/\\/g, '\\\\')).length == 1) {
 					OC.addScript('files_external', parameters['custom']);
@@ -259,6 +274,7 @@ $(document).ready(function() {
 	$('#externalStorage').on('keyup', 'td input', function() {
 		clearTimeout(timer);
 		var tr = $(this).parent().parent();
+		highlightInput($(this));
 		if ($(this).val) {
 			timer = setTimeout(function() {
 				OC.MountConfig.saveStorage(tr);
