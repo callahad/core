@@ -221,6 +221,7 @@ $(document).ready(function() {
 				if (parameters['custom'] && $('#externalStorage tbody tr.'+backendClass.replace(/\\/g, '\\\\')).length == 1) {
 					OC.addScript('files_external', parameters['custom']);
 				}
+				td.children().first().focus();
 				return false;
 			}
 		});
