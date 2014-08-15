@@ -2,7 +2,7 @@
 
 function updateStatus(statusEl, result){
 	statusEl.removeClass('success error loading-small');
-	if (result && result.status == 'success' && result.data.message) {
+	if (result && result.status === 'success' && result.data.message) {
 		statusEl.addClass('success');
 		return true;
 	} else {
@@ -12,8 +12,8 @@ function updateStatus(statusEl, result){
 }
 
 function highlightInput(input) {
-	if ($(input).attr('type') == 'text' || $(input).attr('type') == 'password') {
-		if ($(input).val() == '' && !$(input).hasClass('optional')) {
+	if ($(input).attr('type') === 'text' || $(input).attr('type') === 'password') {
+		if ($(input).val() === '' && !$(input).hasClass('optional')) {
 			$(input).addClass('warning-input');
 			return true;
 		} else {
@@ -27,7 +27,7 @@ OC.MountConfig={
 	saveStorage:function(tr, callback) {
 		var mountPoint = $(tr).find('.mountPoint input').val();
 		var oldMountPoint = $(tr).find('.mountPoint input').data('mountpoint');
-		if (mountPoint == '') {
+		if (mountPoint === '') {
 			return false;
 		}
 		var statusSpan = $(tr).closest('tr').find('.status span');
@@ -39,7 +39,7 @@ OC.MountConfig={
 		}
 		var classOptions = {};
 		$.each(configuration, function(index, input) {
-			if ($(input).val() == '' && !$(input).hasClass('optional')) {
+			if ($(input).val() === '' && !$(input).hasClass('optional')) {
 				addMountPoint = false;
 				return false;
 			}
@@ -187,7 +187,7 @@ $(document).ready(function() {
 		var selected = $(this).find('option:selected').text();
 		var backendClass = $(this).val();
 		$(this).parent().text(selected);
-		if ($(tr).find('.mountPoint input').val() == '') {
+		if ($(tr).find('.mountPoint input').val() === '') {
 			$(tr).find('.mountPoint input').val(suggestMountPoint(selected));
 		}
 		$(tr).addClass(backendClass);
@@ -196,7 +196,7 @@ $(document).ready(function() {
 		var configurations = $(this).data('configurations');
 		var td = $(tr).find('td.configuration');
 		$.each(configurations, function(backend, parameters) {
-			if (backend == backendClass) {
+			if (backend === backendClass) {
 				$.each(parameters['configuration'], function(parameter, placeholder) {
 					var is_optional = false;
 					if (placeholder.indexOf('&') === 0) {
@@ -218,7 +218,7 @@ $(document).ready(function() {
 					highlightInput(newElement);
 					td.append(newElement);
 				});
-				if (parameters['custom'] && $('#externalStorage tbody tr.'+backendClass.replace(/\\/g, '\\\\')).length == 1) {
+				if (parameters['custom'] && $('#externalStorage tbody tr.'+backendClass.replace(/\\/g, '\\\\')).length === 1) {
 					OC.addScript('files_external', parameters['custom']);
 				}
 				td.children().first().focus();
@@ -248,7 +248,7 @@ $(document).ready(function() {
 		while (match && i < 20) {
 			match = false;
 			$('#externalStorage tbody td.mountPoint input').each(function(index, mountPoint) {
-				if ($(mountPoint).val() == defaultMountPoint+append) {
+				if ($(mountPoint).val() === defaultMountPoint+append) {
 					match = true;
 					return false;
 				}
