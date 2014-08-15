@@ -181,12 +181,12 @@ $(document).ready(function() {
 	$('.chzn-select').chosen();
 
 	$('#externalStorage').on('change', '#selectBackend', function() {
-		var tr = $(this).parent().parent();
+		var tr = $(this).closest("tr");
 		$('#externalStorage tbody').append($(tr).clone());
 		$('#externalStorage tbody tr').last().find('.mountPoint input').val('');
 		var selected = $(this).find('option:selected').text();
 		var backendClass = $(this).val();
-		$(this).parent().text(selected);
+		$(tr).find('.backend').text(selected);
 		if ($(tr).find('.mountPoint input').val() === '') {
 			$(tr).find('.mountPoint input').val(suggestMountPoint(selected));
 		}
@@ -227,7 +227,7 @@ $(document).ready(function() {
 		});
 		// Reset chosen
 		var chosen = $(tr).find('.applicable select');
-		chosen.parent().find('div').remove();
+		$(tr).find('.applicable div').remove();
 		chosen.removeAttr('id').removeClass('chzn-done').css({display:'inline-block'});
 		chosen.chosen();
 		$(tr).find('td').last().attr('class', 'remove');
@@ -264,7 +264,7 @@ $(document).ready(function() {
 	}
 
 	$('#externalStorage').on('paste', 'td', function() {
-		var tr = $(this).parent();
+		var tr = $(this).closest("tr");
 		setTimeout(function() {
 			OC.MountConfig.saveStorage(tr);
 		}, 20);
@@ -274,7 +274,7 @@ $(document).ready(function() {
 
 	$('#externalStorage').on('keyup', 'td input', function() {
 		clearTimeout(timer);
-		var tr = $(this).parent().parent();
+		var tr = $(this).closest("tr");
 		highlightInput($(this));
 		if ($(this).val) {
 			timer = setTimeout(function() {
@@ -284,27 +284,26 @@ $(document).ready(function() {
 	});
 
 	$('#externalStorage').on('change', 'td input:checkbox', function() {
-		OC.MountConfig.saveStorage($(this).parent().parent().parent());
+		OC.MountConfig.saveStorage($(this).closest("tr"));
 	});
 
 	$('#externalStorage').on('change', '.applicable .chzn-select', function() {
-		OC.MountConfig.saveStorage($(this).parent().parent());
+		OC.MountConfig.saveStorage($(this).closest("tr"));
 	});
 
 	$('#externalStorage').on('click', '.status>span', function() {
-		OC.MountConfig.saveStorage($(this).parent().parent());
+		OC.MountConfig.saveStorage($(this).closest("tr"));
 	});
 
 	$('#sslCertificate').on('click', 'td.remove>img', function() {
-		var $tr = $(this).parent().parent();
-		var row = this.parentNode.parentNode;
-		$.post(OC.filePath('files_external', 'ajax', 'removeRootCertificate.php'), {cert: row.id});
+		var $tr = $(this).closest("tr");
+		$.post(OC.filePath('files_external', 'ajax', 'removeRootCertificate.php'), {cert: $tr.attr('id')});
 		$tr.remove();
 		return true;
 	});
 
 	$('#externalStorage').on('click', 'td.remove>img', function() {
-		var tr = $(this).parent().parent();
+		var tr = $(this).closest('tr');
 		var mountPoint = $(tr).find('.mountPoint input').val();
 
 		if ($('#externalStorage').data('admin') === true) {
