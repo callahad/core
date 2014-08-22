@@ -1290,13 +1290,17 @@ class Share extends \OC\Share\Constants {
 				$queryArgs = array_merge($queryArgs, $collectionTypes);
 			}
 		}
+
+		if ($shareType == self::$shareTypeUserAndGroups) {
+			// Make sure the unique user target is returned if it exists,
+			// unique targets should follow the group share in the database
+			// If the limit is not 1, the filtering can be done later
+			$where .= ' ORDER BY `*PREFIX*share`.`id` DESC';
+		} else {
+			$where .= ' ORDER BY `*PREFIX*share`.`id` ASC';
+		}
+
 		if ($limit != -1 && !$includeCollections) {
-			if ($shareType == self::$shareTypeUserAndGroups) {
-				// Make sure the unique user target is returned if it exists,
-				// unique targets should follow the group share in the database
-				// If the limit is not 1, the filtering can be done later
-				$where .= ' ORDER BY `*PREFIX*share`.`id` ASC';
-			}
 			// The limit must be at least 3, because filtering needs to be done
 			if ($limit < 3) {
 				$queryLimit = 3;
@@ -1305,7 +1309,6 @@ class Share extends \OC\Share\Constants {
 			}
 		} else {
 			$queryLimit = null;
-			$where .= ' ORDER BY `*PREFIX*share`.`id` ASC';
 		}
 		$select = self::createSelectStatement($format, $fileDependent, $uidOwner);
 		$root = strlen($root);
@@ -1334,10 +1337,10 @@ class Share extends \OC\Share\Constants {
 				}
 			} else if (!isset($uidOwner)) {
 				// Check if the same target already exists
-				if (isset($targets[$row[$column]])) {
+				if (isset($targets[$row['id']])) {
 					// Check if the same owner shared with the user twice
 					// through a group and user share - this is allowed
-					$id = $targets[$row[$column]];
+					$id = $targets[$row['id']];
 					if (isset($items[$id]) && $items[$id]['uid_owner'] == $row['uid_owner']) {
 						// Switch to group share type to ensure resharing conditions aren't bypassed
 						if ($items[$id]['share_type'] != self::SHARE_TYPE_GROUP) {
@@ -1357,8 +1360,8 @@ class Share extends \OC\Share\Constants {
 						$items[$id]['permissions'] |= (int)$row['permissions'];
 						continue;
 					}
-				} else {
-					$targets[$row[$column]] = $row['id'];
+				} elseif (!empty($row['parent'])) {
+					$targets[$row['parent']] = $row['id'];
 				}
 			}
 			// Remove root from file source paths if retrieving own shared items
