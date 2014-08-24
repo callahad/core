@@ -268,9 +268,11 @@ $(document).ready(function() {
 		return defaultMountPoint+append;
 	}
 
-	$('#externalStorage').on('paste', 'td', function() {
+	$('#externalStorage').on('paste', 'td input', function() {
 		var tr = $(this).closest("tr");
+		var me = this;
 		setTimeout(function() {
+			highlightInput($(me));
 			OC.MountConfig.saveStorage(tr);
 		}, 20);
 	});
