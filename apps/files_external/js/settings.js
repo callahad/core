@@ -11,15 +11,20 @@ function updateStatus(statusEl, result){
 	}
 }
 
+function highlightBorder(element, highlight) {
+	if (highlight) {
+		$(element).addClass('warning-input');
+		return true;
+	} else {
+		$(element).removeClass('warning-input');
+		return false;
+	}
+}
+
 function highlightInput(input) {
 	if ($(input).attr('type') === 'text' || $(input).attr('type') === 'password') {
-		if ($(input).val() === '' && !$(input).hasClass('optional')) {
-			$(input).addClass('warning-input');
-			return true;
-		} else {
-			$(input).removeClass('warning-input');
-			return false;
-		}
+		return highlightBorder(input,
+			($(input).val() === '' && !$(input).hasClass('optional')));
 	}
 }
 
@@ -288,6 +293,8 @@ $(document).ready(function() {
 	});
 
 	$('#externalStorage').on('change', '.applicable .chzn-select', function() {
+		var box = $(this).closest(".applicable").find(".chzn-choices");
+		highlightBorder(box, ($(this).val() == null));
 		OC.MountConfig.saveStorage($(this).closest("tr"));
 	});
 
