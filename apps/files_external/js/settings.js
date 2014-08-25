@@ -12,13 +12,8 @@ function updateStatus(statusEl, result){
 }
 
 function highlightBorder(element, highlight) {
-	if (highlight) {
-		$(element).addClass('warning-input');
-		return true;
-	} else {
-		$(element).removeClass('warning-input');
-		return false;
-	}
+	$(element).toggleClass('warning-input', highlight);
+	return highlight;
 }
 
 function highlightInput(input) {
